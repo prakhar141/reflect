@@ -8,7 +8,7 @@ from firebase_admin import credentials, db
 # ====== FIREBASE CONFIGURATION ======
 if not firebase_admin._apps:
     firebase_config = dict(st.secrets["firebase"])
-    firebase_config["private_key"] = firebase_config["private_key"].replace("\\n", "\n")
+    firebase_config["private_key"] = firebase_config["private_key"]
     cred = credentials.Certificate(firebase_config)
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://reflective-ai-4f183-default-rtdb.firebaseio.com/'
