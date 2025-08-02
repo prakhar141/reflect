@@ -2,20 +2,26 @@ import os, json, time, requests
 from datetime import datetime
 import streamlit as st
 from transformers import pipeline
+import firebase_admin
+from firebase_admin import credentials, db
 
-# ====== CONFIG ======
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY") or "YOUR_API_KEY"
-MODEL_NAME = "deepseek/deepseek-chat-v3-0324:free"
-LOG_DIR = "user_logs"
-os.makedirs(LOG_DIR, exist_ok=True)
+# ====== FIREBASE CONFIGURATION ======
+cred = credentials.Certificate("firebase-key.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://reflective-ai-4f183-default-rtdb.firebaseio.com/'  # <-- replace this
+})
 
-# ====== SENTIMENT ANALYZER ======
-sentiment_pipeline = pipeline("sentiment-analysis")
-
-# ====== STREAMLIT SETUP ======
+# ====== STREAMLIT CONFIGURATION ======
 st.set_page_config(page_title="🪞 Reflective AI", layout="wide")
 st.title("🤖 Reflective AI Companion")
 st.markdown("Track your thoughts, moods, and patterns over time.")
+
+# ====== OPENROUTER CONFIG ======
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY") or "YOUR_API_KEY"
+MODEL_NAME = "deepseek/deepseek-chat-v3-0324:free"
+
+# ====== SENTIMENT ANALYZER ======
+sentiment_pipeline = pipeline("sentiment-analysis")
 
 # ====== USER SETUP ======
 with st.sidebar:
@@ -25,23 +31,20 @@ with st.sidebar:
         st.session_state.clear()
         st.rerun()
 
-# ====== UTILS ======
-def get_user_file(username):
-    return os.path.join(LOG_DIR, f"{username.lower().strip()}.json")
+# ====== FIREBASE HELPERS ======
+def get_user_ref(username):
+    return db.reference(f"/users/{username.lower().strip()}")
 
 def load_user_memory(username):
-    path = get_user_file(username)
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            return json.load(f)
-    return []
+    user_ref = get_user_ref(username)
+    data = user_ref.get()
+    return data if data else []
 
 def save_to_user_memory(username, entry):
-    path = get_user_file(username)
+    user_ref = get_user_ref(username)
     memory = load_user_memory(username)
     memory.append(entry)
-    with open(path, "w") as f:
-        json.dump(memory, f, indent=2)
+    user_ref.set(memory)
 
 def summarize_user_patterns(memory):
     sentiments = [m["sentiment"] for m in memory]
@@ -92,7 +95,7 @@ if username:
                 "question": query,
                 "answer": response,
                 "sentiment": sentiment,
-                "topics": [],  # optional: use keyword extractor later
+                "topics": []  # optional future keyword extraction
             }
             st.session_state.chat.append(log_entry)
             save_to_user_memory(username, log_entry)
