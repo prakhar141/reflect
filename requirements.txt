@@ -1,0 +1,9 @@
+streamlit>=1.30.0
+langchain>=0.1.17
+openrouter
+tiktoken
+transformers>=4.40.0
+sentence-transformers>=2.2.2
+torch>=2.1.0
+scikit-learn
+numpy
