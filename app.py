@@ -7,7 +7,9 @@ from firebase_admin import credentials, db
 
 # ====== FIREBASE CONFIGURATION ======
 if not firebase_admin._apps:
-    cred = credentials.Certificate(dict(st.secrets["firebase"]))
+    firebase_config = dict(st.secrets["firebase"])
+    firebase_config["private_key"] = firebase_config["private_key"].replace("\\n", "\n")
+    cred = credentials.Certificate(firebase_config)
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://reflective-ai-4f183-default-rtdb.firebaseio.com/'
     })
@@ -96,7 +98,7 @@ if username:
                 "question": query,
                 "answer": response,
                 "sentiment": sentiment,
-                "topics": []  # future NLP for topic extraction
+                "topics": []  # for future NLP topic extraction
             }
             st.session_state.chat.append(log_entry)
             save_to_user_memory(username, log_entry)
