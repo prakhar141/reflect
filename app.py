@@ -8,7 +8,7 @@ from firebase_admin import credentials, db
 # ====== FIREBASE CONFIGURATION ======
 if not firebase_admin._apps:
     firebase_config = dict(st.secrets["firebase"])
-    firebase_config["private_key"] = firebase_config["private_key"].replace("\\n", "\n")  # 🔥 critical fix
+    firebase_config["private_key"] = firebase_config["private_key"]  # 🔥 critical fix
     cred = credentials.Certificate(firebase_config)
     firebase_admin.initialize_app(cred, {
         'databaseURL': f'https://{firebase_config["project_id"]}-default-rtdb.firebaseio.com/'
