@@ -1,4 +1,4 @@
-import os, json, time, requests
+import os, time, requests
 from datetime import datetime
 import streamlit as st
 from transformers import pipeline
@@ -7,7 +7,7 @@ from firebase_admin import credentials, db
 
 # ====== FIREBASE CONFIGURATION ======
 if not firebase_admin._apps:
-    cred = credentials.Certificate("reflective-ai-4f183-firebase-adminsdk-fbsvc-a0eeaa8704.json")
+    cred = credentials.Certificate(dict(st.secrets["firebase"]))
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://reflective-ai-4f183-default-rtdb.firebaseio.com/'
     })
@@ -96,7 +96,7 @@ if username:
                 "question": query,
                 "answer": response,
                 "sentiment": sentiment,
-                "topics": []  # optional future keyword extraction
+                "topics": []  # future NLP for topic extraction
             }
             st.session_state.chat.append(log_entry)
             save_to_user_memory(username, log_entry)
@@ -115,7 +115,7 @@ if username:
 
     with st.sidebar:
         st.subheader("🗂️ Your Reflections")
-        for i, chat in enumerate(reversed(memory[-5:])):
+        for chat in reversed(memory[-5:]):
             st.markdown(f"**{chat['timestamp'].split('T')[0]}**")
             st.markdown(f"🧠 *{chat['question']}*\n💬 {chat['answer'][:150]}...")
             st.markdown(f"😶 Sentiment: `{chat['sentiment']}`")
