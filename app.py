@@ -6,10 +6,11 @@ import firebase_admin
 from firebase_admin import credentials, db
 
 # ====== FIREBASE CONFIGURATION ======
-cred = credentials.Certificate("firebase-key.json")
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://reflective-ai-4f183-default-rtdb.firebaseio.com/'  # <-- replace this
-})
+if not firebase_admin._apps:
+    cred = credentials.Certificate("firebase-key.json")
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://reflective-ai-4f183-default-rtdb.firebaseio.com/'
+    })
 
 # ====== STREAMLIT CONFIGURATION ======
 st.set_page_config(page_title="🪞 Reflective AI", layout="wide")
