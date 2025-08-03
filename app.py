@@ -8,10 +8,10 @@ from firebase_admin import credentials, db
 # ====== FIREBASE CONFIGURATION ======
 if not firebase_admin._apps:
     firebase_config = dict(st.secrets["firebase"])
-    firebase_config["private_key"] = firebase_config["private_key"].replace('\n','\\\n')  # 🔥 critical fix
+    firebase_config["private_key"] = firebase_config["private_key"].replace("\\n", "\n")
     cred = credentials.Certificate(firebase_config)
     firebase_admin.initialize_app(cred, {
-        'databaseURL': f'https://reflective-ai-4f183-default-rtdb.firebaseio.com/'
+        'databaseURL': 'https://test-45718-default-rtdb.firebaseio.com/'
     })
 
 # ====== STREAMLIT CONFIGURATION ======
