@@ -123,4 +123,4 @@ if username:
             st.markdown(f"😶 Sentiment: `{chat['sentiment']}`")
             st.markdown("---")
 else:
-    st.warning("👤 Please enter your name in the sidebar to begin.")
+    st.warning("👤 Please enter your e-mail_id in the sidebar to begin.")
