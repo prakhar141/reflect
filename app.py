@@ -29,7 +29,7 @@ sentiment_pipeline = pipeline("sentiment-analysis")
 # ====== USER SETUP ======
 with st.sidebar:
     st.header("👤 User Login")
-    username = st.text_input("Enter your name to start:")
+    username = st.text_input("Enter your email-id to start:")
     if st.button("🔁 Start New Session"):
         st.session_state.clear()
         st.rerun()
